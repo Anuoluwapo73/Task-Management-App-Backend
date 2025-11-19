@@ -54,7 +54,7 @@ app.use(cors({
 }));
 
 // Handle preflight requests explicitly
-app.options('*', cors());
+app.options('/*', cors());
 
 // Body parsing middleware
 app.use(express.json());
@@ -91,7 +91,7 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 });
 
 // 404 handler
-app.use('*', (req: express.Request, res: express.Response) => {
+app.use('/*', (req: express.Request, res: express.Response) => {
   res.status(404).json({
     error: 'Route not found',
     message: `The route ${req.originalUrl} does not exist`
