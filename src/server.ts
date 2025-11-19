@@ -35,11 +35,9 @@ app.use(cors({
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-  optionsSuccessStatus: 204
+  optionsSuccessStatus: 204,
+  preflightContinue: false
 }));
-
-// Handle preflight requests explicitly
-app.options('/*', cors());
 // ===================================================================
 
 // Body parsers
