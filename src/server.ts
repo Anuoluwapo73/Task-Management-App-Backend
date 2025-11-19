@@ -13,9 +13,12 @@ const app = express();
 // Connect to DB
 connectDB();
 
-// -------------------
-// CORS FIX (Guaranteed Working)
-// -------------------
+
+
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use(cors({
   origin: "https://task-management-app-frontend-16b2.vercel.app",
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
@@ -23,12 +26,7 @@ app.use(cors({
   credentials: true
 }));
 
-// Handle OPTIONS globally (fixes preflight)
-app.options("/api/*", cors());
 
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/auth', authRouter);  // MUST contain /signup inside the router
