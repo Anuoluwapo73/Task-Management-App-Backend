@@ -15,46 +15,23 @@ connectDB();
 
 // ======== DYNAMIC CORS CONFIG (WORKS ON RENDER + VERCEL) ==========
 app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (Postman, curl)
-    if (!origin) return callback(null, true);
-
-    // Allow localhost
-    if (origin.startsWith("http://localhost") || origin.startsWith("http://127.0.0.1")) {
-      return callback(null, true);
-    }
-
-    // Allow all Vercel preview URLs for your frontend
-    if (origin.startsWith("https://task-management-app-frontend-16b2")) {
-      return callback(null, true);
-    }
-
-    // Block other origins
-    callback(new Error("Not allowed by CORS"));
-  },
+  origin: "https://task-management-app-frontend-16b2-cgq1jrw5e.vercel.app/login",
   credentials: true,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-  optionsSuccessStatus: 204,
-  preflightContinue: false
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization", "x-retry-count"]
 }));
-// ===================================================================
 
-// Body parsers
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://task-management-app-frontend-16b2-cgq1jrw5e.vercel.app/login");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, x-retry-count");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
 
-// Routes
-app.use('/api/auth', authRouter);
-app.use('/api/task', taskRouter);
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
 
-// Health check
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'OK',
-    message: 'Server is running',
-    timestamp: new Date().toISOString(),
-  });
+  next();
 });
 
 const PORT = config.PORT || process.env.PORT || 5000;
