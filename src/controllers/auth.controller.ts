@@ -1,55 +1,56 @@
-import { generateRefreshToken, generateWebAccessToken } from '@src/lib/jwt';
-import { loginUser, registerUser } from '@src/services/auth.services';
+// controllers/auth.controller.ts
 import { Request, Response } from 'express';
+import { loginUser, registerUser } from '../services/auth.services';
+import { generateToken } from '../lib/jwt';
 
-//sign up
-export const signUp = async (req: Request, res: Response) => {
+export const signup = async (req: Request, res: Response) => {
   try {
-    const { username, email, password } = req.body;
-    const user = await registerUser({ username, email, password });
-    //generate tokens
-    const accessToken = generateWebAccessToken(user._id);
-    const refreshToken = generateRefreshToken(user._id);
+    const user = await registerUser(req.body);
 
-    res
-      .status(201)
-      .json({ message: 'User registered successfully', user, accessToken, refreshToken });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: 'Internal server error, Error signing up user, Please try again' });
-    console.log('Error signing up user', error);
+    // Generate JWT tokens
+    const accessToken = generateToken({ userId: user._id }, 'access');
+    const refreshToken = generateToken({ userId: user._id }, 'refresh');
+
+    res.status(201).json({
+      success: true,
+      message: 'User registered successfully',
+      data: {
+        user,
+        accessToken,
+        refreshToken,
+      },
+    });
+  } catch (error: any) {
+    console.error('Signup controller error:', error);
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
-//login
 export const login = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-
   try {
-    if (!email || !password)
-      return res.status(400).json({ message: 'Email and password are required' });
+    const user = await loginUser(req.body);
 
-    const user = await loginUser({ email, password });
-    //generate tokens
-    const accessToken = generateWebAccessToken(user._id);
-    const refreshToken = generateRefreshToken(user._id);
-    res
-      .status(200)
-      .json({ message: 'User logged in successfully', user, accessToken, refreshToken });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: 'Internal server error, Error logging in user, Please try again' });
-    console.log('Error logging in user', error);
+    // Generate JWT tokens
+    const accessToken = generateToken({ userId: user._id }, 'access');
+    const refreshToken = generateToken({ userId: user._id }, 'refresh');
+
+    res.status(200).json({
+      success: true,
+      message: 'Login successful',
+      data: {
+        user,
+        accessToken,
+        refreshToken,
+      },
+    });
+  } catch (error: any) {
+    console.error('Login controller error:', error);
+    res.status(401).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
-
-//logout
-export const logout = async (_req: Request, _res: Response) => { };
-
-//get user
-export const getUser = async (_req: Request, _res: Response) => { };
-
-//refresh token
-export const refreshToken = async (_req: Request, _res: Response) => { };

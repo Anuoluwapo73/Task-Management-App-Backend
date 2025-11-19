@@ -13,18 +13,39 @@ const userSchema = new Schema<IUser>(
   { timestamps: true },
 );
 
+// FIX: Proper password hashing middleware
 userSchema.pre('save', async function (next) {
-  // Hash password before saving (pseudo-code)
-  if (this.isModified('password')) {
-    this.password = await bcrypt.hash(this.password, 10);
-  } else {
+  // Only hash the password if it has been modified (or is new)
+  if (!this.isModified('password')) {
+    return next(); // ← FIX: Return here instead of else block
+  }
+
+  try {
+    // Hash the password with salt rounds
+    this.password = await bcrypt.hash(this.password, 12);
     next();
+  } catch (error: any) {
+    next(error);
   }
 });
 
-userSchema.methods.comparePassword = async function (password: string): Promise<boolean> {
-  return await bcrypt.compare(password, this.password);
+// FIX: Enhanced comparePassword method with better error handling
+userSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
+  try {
+    return await bcrypt.compare(candidatePassword, this.password);
+  } catch (error) {
+    console.error('Password comparison error:', error);
+    return false;
+  }
 };
+
+// Add method to get user without password
+userSchema.methods.toJSON = function () {
+  const userObject = this.toObject();
+  delete userObject.password;
+  return userObject;
+};
+
 const User = model<IUser>('User', userSchema);
 
 export default User;
