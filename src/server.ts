@@ -22,8 +22,7 @@ app.use(cors({
   optionsSuccessStatus: 204
 }));
 
-// Handle preflight requests explicitly
-app.options('/*', cors());
+
 
 // Body parsing middleware
 app.use(express.json());
