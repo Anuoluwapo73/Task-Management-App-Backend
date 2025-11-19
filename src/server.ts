@@ -10,37 +10,41 @@ dotenv.config();
 
 const app = express();
 
-// Connect to DB
+// Connect DB
 connectDB();
 
-// CORS MUST come first - before any other middleware
+// ======== CORS CONFIG (WORKING ON RENDER + VERCEL) ==========
+const allowedOrigin = "https://task-management-app-frontend-16b2.vercel.app";
+
 app.use(cors({
-  origin: "https://task-management-app-frontend-16b2.vercel.app",
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  origin: allowedOrigin,
   credentials: true,
-  optionsSuccessStatus: 204
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"]
 }));
 
-// Handle preflight requests
-app.options('/*', cors());
+// Handle preflight
+app.options('*', cors({
+  origin: allowedOrigin,
+  credentials: true
+}));
 
-// Body parsing middleware
+// ============================================================
+
+// Body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
-
 // Routes
-app.use('/api/auth', authRouter);  // MUST contain /signup inside the router
+app.use('/api/auth', authRouter);
 app.use('/api/task', taskRouter);
 
-// Health route
+// Health check
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'OK',
     message: 'Server is running',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 });
 
