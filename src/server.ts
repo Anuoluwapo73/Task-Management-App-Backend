@@ -23,12 +23,6 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"]
 }));
 
-// Handle preflight
-app.options('*', cors({
-  origin: allowedOrigin,
-  credentials: true
-}));
-
 // ============================================================
 
 // Body parsers
