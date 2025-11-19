@@ -13,17 +13,30 @@ const app = express();
 // Connect DB
 connectDB();
 
-// ======== CORS CONFIG (WORKING ON RENDER + VERCEL) ==========
-const allowedOrigin = "https://task-management-app-frontend-16b2-cgq1jrw5e.vercel.app";
-
+// ======== DYNAMIC CORS CONFIG (WORKS ON RENDER + VERCEL) ==========
 app.use(cors({
-  origin: allowedOrigin,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (Postman, curl)
+    if (!origin) return callback(null, true);
+
+    // Allow localhost
+    if (origin.startsWith("http://localhost") || origin.startsWith("http://127.0.0.1")) {
+      return callback(null, true);
+    }
+
+    // Allow all Vercel preview URLs for your frontend
+    if (origin.startsWith("https://task-management-app-frontend-16b2")) {
+      return callback(null, true);
+    }
+
+    // Block other origins
+    callback(new Error("Not allowed by CORS"));
+  },
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"]
 }));
-
-// ============================================================
+// ===================================================================
 
 // Body parsers
 app.use(express.json());
