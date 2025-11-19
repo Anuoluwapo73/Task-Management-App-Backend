@@ -14,7 +14,7 @@ const app = express();
 connectDB();
 
 // ======== CORS CONFIG (WORKING ON RENDER + VERCEL) ==========
-const allowedOrigin = "https://task-management-app-frontend-16b2.vercel.app";
+const allowedOrigin = "https://task-management-app-frontend-16b2-cgq1jrw5e.vercel.app";
 
 app.use(cors({
   origin: allowedOrigin,
