@@ -24,7 +24,7 @@ app.use(cors({
 }));
 
 // Handle OPTIONS globally (fixes preflight)
-app.options("*", cors());
+app.options("/api/*", cors());
 
 // Middleware
 app.use(express.json());
