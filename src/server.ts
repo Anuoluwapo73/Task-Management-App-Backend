@@ -14,11 +14,16 @@ const app = express();
 connectDB();
 
 // Middleware - CORS should come before other middleware
-
 app.use(cors({
   origin: "https://task-management-app-frontend-16b2.vercel.app",
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"]
-}))
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  credentials: true,
+  optionsSuccessStatus: 204
+}));
+
+// Handle preflight requests explicitly
+app.options('/*', cors());
 
 // Body parsing middleware
 app.use(express.json());
