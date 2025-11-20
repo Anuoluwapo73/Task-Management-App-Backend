@@ -45,7 +45,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/auth', authRouter);
-app.use('/api/task', taskRouter);
+app.use('/api/tasks', taskRouter);
 
 // Health check
 app.get('/health', (req, res) => {
