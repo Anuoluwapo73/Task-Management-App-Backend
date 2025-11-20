@@ -28,7 +28,11 @@ export const createTask = async (req: Request, res: Response) => {
 
 export const getAll = async (req: Request, res: Response) => {
   try {
-    const tasks = await getAllTasks();
+    const userId = (req as any).user;
+    if (!userId) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+    const tasks = await getAllTasks(userId);
     if (!tasks) {
       return res.status(404).json({ message: 'No tasks found' });
     }

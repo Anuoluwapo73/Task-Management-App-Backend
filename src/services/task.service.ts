@@ -5,8 +5,9 @@ export const create = async (taskData: any) => {
   return result;
 };
 
-export const getAllTasks = async () => {
-  const result = await Task.find().populate('user');
+export const getAllTasks = async (userId?: string) => {
+  const query = userId ? { user: userId } : {};
+  const result = await Task.find(query).populate('user');
   return result;
 };
 
