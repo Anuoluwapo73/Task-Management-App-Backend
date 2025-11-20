@@ -15,14 +15,14 @@ connectDB();
 
 // ======== DYNAMIC CORS CONFIG (WORKS ON RENDER + VERCEL) ==========
 app.use(cors({
-  origin: "https://task-management-app-frontend-16b2-cgq1jrw5e.vercel.app/login",
+  origin: "https://task-management-app-frontend-vqtn.onrender.com/login",
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization", "x-retry-count"]
 }));
 
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://task-management-app-frontend-16b2-cgq1jrw5e.vercel.app/login");
+  res.header("Access-Control-Allow-Origin", "");
   res.header("Access-Control-Allow-Credentials", "true");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, x-retry-count");
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
