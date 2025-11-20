@@ -13,9 +13,9 @@ const app = express();
 // Connect DB
 connectDB();
 
-// ======== DYNAMIC CORS CONFIG (WORKS ON RENDER + VERCEL) ==========
+// ======== DYNAMIC CORS CONFIG (WORKS ON RENDER) ==========
 app.use(cors({
-  origin: "https://task-management-app-frontend-vqtn.onrender.com/login",
+  origin: "https://task-management-app-frontend-vqtn.onrender.com",
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization", "x-retry-count"]
