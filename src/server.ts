@@ -13,25 +13,47 @@ const app = express();
 // Connect DB
 connectDB();
 
-// ======== DYNAMIC CORS CONFIG (WORKS ON RENDER) ==========
+// CORS Configuration
 app.use(cors({
-  origin: "https://task-management-app-frontend-vqtn.onrender.com",
+  origin: (origin, callback) => {
+    // Allow requests with no origin (Postman, curl, mobile apps)
+    if (!origin) return callback(null, true);
+
+    // Allow localhost for development
+    if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+      return callback(null, true);
+    }
+
+    // Allow Render frontend
+    if (origin === 'https://task-management-app-frontend-vqtn.onrender.com') {
+      return callback(null, true);
+    }
+
+    // Block other origins
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization", "x-retry-count"]
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  optionsSuccessStatus: 204,
+  preflightContinue: false
 }));
 
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "");
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, x-retry-count");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
+// Body parsers
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(204);
-  }
+// Routes
+app.use('/api/auth', authRouter);
+app.use('/api/task', taskRouter);
 
-  next();
+// Health check
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'OK',
+    message: 'Server is running',
+    timestamp: new Date().toISOString(),
+  });
 });
 
 const PORT = config.PORT || process.env.PORT || 5000;
