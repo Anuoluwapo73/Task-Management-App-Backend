@@ -9,13 +9,27 @@ import {
   pendingTask,
   updateTask,
 } from '@src/services/task.service';
+import { sendTaskCreatedEmail, sendTaskStatusEmail } from '@src/services/email.service';
 import { Request, Response } from 'express';
 
 export const createTask = async (req: Request, res: Response) => {
   try {
-    const user = (req as any).user;
+    const userId = (req as any).user;
     const { title, description, status } = req.body;
-    const newTask = await create({ title, description, status, user });
+    const newTask = await create({ title, description, status, user: userId });
+
+    // Populate user data to get email and username
+    const populatedTask = await getTask(newTask._id.toString());
+
+    // Send task created email (non-blocking)
+    if (populatedTask && populatedTask.user) {
+      const userEmail = (populatedTask.user as any).email;
+      const username = (populatedTask.user as any).username;
+      sendTaskCreatedEmail(userEmail, username, title).catch(err =>
+        console.error('Failed to send task created email:', err)
+      );
+    }
+
     res.status(201).json({
       message: 'Task created successfully',
       task: newTask,
@@ -116,6 +130,16 @@ export const markAsCompleted = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Task not found' });
     }
     const complete = await completeTask(id);
+
+    // Send task status email (non-blocking)
+    if (task && task.user) {
+      const userEmail = (task.user as any).email;
+      const username = (task.user as any).username;
+      sendTaskStatusEmail(userEmail, username, task.title, 'completed').catch(err =>
+        console.error('Failed to send task status email:', err)
+      );
+    }
+
     res.status(200).json({ message: 'Task marked as complete', task: complete });
   } catch (error) {
     res.status(500).json({ message: 'Internal server error', error });
@@ -135,6 +159,16 @@ export const markAsInProgress = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Task not found' });
     }
     const inProgress = await inProgressTask(id);
+
+    // Send task status email (non-blocking)
+    if (task && task.user) {
+      const userEmail = (task.user as any).email;
+      const username = (task.user as any).username;
+      sendTaskStatusEmail(userEmail, username, task.title, 'in-progress').catch(err =>
+        console.error('Failed to send task status email:', err)
+      );
+    }
+
     res.status(200).json({ message: 'Task marked as in-progress', task: inProgress });
   } catch (error) {
     res.status(500).json({ message: 'Internal server error', error });

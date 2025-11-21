@@ -22,6 +22,7 @@
     "@types/lodash": "^4.17.20",
     "@types/ms": "^2.1.0",
     "@types/node": "^24.10.1",
+    "@types/nodemailer": "^7.0.4",
     "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.16",
@@ -37,6 +38,7 @@
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "mongoose": "^8.19.3",
+    "nodemailer": "^7.0.10",
     "nodemon": "^3.1.10",
     "typescript-transform-paths": "^3.5.5"
   }

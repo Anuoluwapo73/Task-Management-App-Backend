@@ -2,6 +2,7 @@
 import { Request, Response } from 'express';
 import { loginUser, registerUser } from '../services/auth.services';
 import { generateToken } from '../lib/jwt';
+import { sendWelcomeEmail, sendAdminNotification } from '../services/email.service';
 
 export const signup = async (req: Request, res: Response) => {
   try {
@@ -10,6 +11,14 @@ export const signup = async (req: Request, res: Response) => {
     // Generate JWT tokens
     const accessToken = generateToken({ userId: user._id }, 'access');
     const refreshToken = generateToken({ userId: user._id }, 'refresh');
+
+    // Send welcome email to user and notification to admin (non-blocking)
+    sendWelcomeEmail(user.email, user.username).catch(err =>
+      console.error('Failed to send welcome email:', err)
+    );
+    sendAdminNotification(user.email, user.username).catch(err =>
+      console.error('Failed to send admin notification:', err)
+    );
 
     res.status(201).json({
       success: true,
